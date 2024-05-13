@@ -2,7 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "<%= relativePath %>dist/out-tsc",
-    "types": ["node"]
+    "types": ["node"],
+    "composite": true
   },
   "exclude": ["src/**/*.spec.*", "src/**/*.test.*, src/**/*.stories.*"],
   "include": ["src/**/*.ts"]

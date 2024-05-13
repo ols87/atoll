@@ -5,10 +5,10 @@ dist
 tmp
 /out-tsc
 
-/islands
-
 # dependencies
 node_modules
+
+ui/islands
 
 # IDEs and editors
 /.idea

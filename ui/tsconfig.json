@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.storybook.json"
+    }
+  ],
+  "compilerOptions": {
+    "esModuleInterop": true
+  },
+  "exclude": ["**/*.stories.ts", "**/*.stories.js"]
+}

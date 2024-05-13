@@ -80,11 +80,20 @@ async function writeFiles() {
 
 function updateTargets() {
   projectConfig.targets = {
+    test: {
+      executor: '@nx/vite:test',
+      dependsOn: [
+        {
+          target: 'build',
+          projects: 'self',
+        },
+      ],
+    },
     build: {
       executor: '@nx/vite:build',
       outputs: ['{options.outputPath}'],
       options: {
-        outputPath: `dist/${filePath}`,
+        outputPath: `ui/islands/${fileName}`,
         main: `${filePath}/src/${fileName}.element.ts`,
         tsConfig: `${filePath}/tsconfig.json`,
         assets: [`${filePath}/*.md`],
@@ -102,8 +111,6 @@ function updateTsConfig() {
   let tsConfig = JSON.parse(
     tree.read(`${componentRoot}/tsconfig.json`, 'utf-8')
   );
-
-  delete tsConfig.references;
 
   tsConfig.compilerOptions = {
     jsx: 'preserve',
@@ -135,7 +142,6 @@ function deleteFiles() {
     'src/styles.css',
     'index.html',
     '.babelrc',
-    'tsconfig.spec.json',
     'tsconfig.app.json',
   ];
 

@@ -1,7 +1,7 @@
 {
   "extends": "<%= relativePath %>tsconfig.base.json",
   "include": ["src/**/*.tsx", "src/**/*.ts"],
-  "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts", "src/**/*.stories.ts"],
+  "exclude": ["src/**/*.spec.*", "src/**/*.test.*", "src/**/*.stories.*"],
   "references": [
     {
       "path": "./tsconfig.island.json"

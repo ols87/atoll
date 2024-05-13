@@ -1,0 +1,8 @@
+import '@/ui/islands/<%= fileName %>/<%= fileName %>.mjs';
+
+describe('<%= fileName %>', () => {
+  it('work', async () => {
+    document.body.innerHTML = '<<%= tagName %> prop="<%= fileName %>"></<%= tagName %>>';
+    expect(document.body.innerHTML).toContain('<%= fileName %> works');
+  });
+});

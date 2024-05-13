@@ -5,6 +5,8 @@ dist
 tmp
 /out-tsc
 
+/islands
+
 # dependencies
 node_modules
 
@@ -39,3 +41,6 @@ testem.log
 Thumbs.db
 
 .nx/cache
+
+
+storybook-static

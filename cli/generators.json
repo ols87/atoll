@@ -1,0 +1,9 @@
+{
+  "generators": {
+    "island": {
+      "factory": "./src/generators/island/generator",
+      "schema": "./src/generators/island/schema.json",
+      "description": "island generator"
+    }
+  }
+}

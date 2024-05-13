@@ -1,0 +1,5 @@
+import { customElement } from 'solid-element';
+
+customElement('<%= tagName %>', { prop: '<%= tagName %>' }, (props) => {
+  return <div>{props.prop} works</div>;
+});

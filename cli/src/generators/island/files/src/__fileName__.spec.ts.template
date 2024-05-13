@@ -1,4 +1,4 @@
-import '@/ui/islands/<%= fileName %>/<%= fileName %>.mjs';
+import '<%= relativePath %>../ui/islands/<%= fileName %>/<%= fileName %>.mjs';
 
 describe('<%= fileName %>', () => {
   it('work', async () => {

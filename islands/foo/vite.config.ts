@@ -5,13 +5,13 @@ import { resolve } from 'path';
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: `${process.cwd()}node_modules/.vite/<%= fileName %>`,
+  cacheDir: `${process.cwd()}node_modules/.vite/foo`,
   plugins: [solidPlugin()],
   build: {
     lib: {
-      entry: resolve(__dirname, './src/<%= fileName %>.element.tsx'),
-      name: '<%= fileName %>',
-      fileName: '<%= fileName %>',
+      entry: resolve(__dirname, './src/foo.element.tsx'),
+      name: 'foo',
+      fileName: 'foo',
     },
   },
   test: {

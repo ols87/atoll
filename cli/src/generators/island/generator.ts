@@ -97,6 +97,7 @@ function updateTargets() {
         main: `${filePath}/src/${fileName}.element.ts`,
         tsConfig: `${filePath}/tsconfig.json`,
         assets: [`${filePath}/*.md`],
+        emptyOutDir: true,
       },
     },
     lint: {

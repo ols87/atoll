@@ -1,4 +1,5 @@
-import '../../../ui/islands/example/example.mjs';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import '../../../ui/islands/example/example.umd';
 
 describe('example', () => {
   it('work', async () => {

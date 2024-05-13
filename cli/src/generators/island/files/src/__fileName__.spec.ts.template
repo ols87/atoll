@@ -1,4 +1,6 @@
-import '<%= relativePath %>../ui/islands/<%= fileName %>/<%= fileName %>.mjs';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+
+import '<%= relativePath %>../ui/islands/<%= fileName %>/<%= fileName %>.umd';
 
 describe('<%= fileName %>', () => {
   it('work', async () => {

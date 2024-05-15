@@ -1,5 +1,5 @@
 {
-  "extends": ["../.eslintrc.json", "../.eslintrc.base.json"],
+  "extends": ["../.eslintrc.base.json"],
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
@@ -19,13 +19,6 @@
       "parser": "jsonc-eslint-parser",
       "rules": {
         "@nx/dependency-checks": "error"
-      }
-    },
-    {
-      "files": ["./package.json", "./generators.json"],
-      "parser": "jsonc-eslint-parser",
-      "rules": {
-        "@nx/nx-plugin-checks": "error"
       }
     }
   ]

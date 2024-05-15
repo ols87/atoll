@@ -26,6 +26,13 @@
         "previewTargetName": "preview",
         "serveStaticTargetName": "serve-static"
       }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "eslint:lint",
+        "extensions": ["ts", "tsx", "js", "jsx", "html", "vue"]
+      }
     }
   ],
   "targetDefaults": {
@@ -64,6 +71,11 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["default", "^default"]
+    },
+    "@nx/esbuild:esbuild": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^default"]
     }
   },
   "generators": {
@@ -72,6 +84,11 @@
       "linter": "eslint",
       "unitTestRunner": "vitest",
       "e2eTestRunner": "none"
+    }
+  },
+  "release": {
+    "version": {
+      "preVersionCommand": "npx nx run-many -t build"
     }
   }
 }

@@ -16,7 +16,11 @@
     "solid-element": "^1.8.0",
     "solid-js": "^1.8.17",
     "tslib": "^2.6.2",
-    "vite-plugin-solid": "^2.10.2"
+    "vite-plugin-solid": "^2.10.2",
+    "@chainsafe/libp2p-gossipsub": "^13.0.0",
+    "@orbitdb/core": "^2.2.0",
+    "events": "^3.3.0",
+    "helia": "^4.2.1"
   },
   "devDependencies": {
     "@nx/esbuild": "^19.0.2",

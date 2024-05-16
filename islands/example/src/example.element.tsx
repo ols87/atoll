@@ -1,12 +1,22 @@
 import { customElement, noShadowDOM } from 'solid-element';
-import { sdk } from '@atoll/sdk';
+import { generateIdentity, exportIdentity, Identity } from '@atoll/sdk';
+import { createSignal } from 'solid-js';
 
 customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
   noShadowDOM();
+  const [identity, setIdentity] = createSignal<Identity>(null);
 
-  const initSDK = () => {
-    sdk();
+  const generateID = async () => setIdentity(await generateIdentity());
+
+  const exportID = async () => {
+    console.log(await exportIdentity());
   };
 
-  return <button onClick={initSDK}>Click me</button>;
+  return (
+    <>
+      {identity()?.publicKey}
+      <button onClick={generateID}>Generate ID</button>
+      <button onClick={exportID}>Export Private Key</button>
+    </>
+  );
 });

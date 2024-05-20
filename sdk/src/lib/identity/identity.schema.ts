@@ -1,63 +1,49 @@
-import { PrimaryKey, RxJsonSchema, TopLevelProperty } from 'rxdb';
+import { createRxDatabase } from 'rxdb';
+import { wrappedKeyEncryptionCryptoJsStorage } from 'rxdb/plugins/encryption-crypto-js';
+import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 
-export type Identity = {
+export async function identityTransferDatabase(args: {
+  name: string;
+  password: string;
+  collection: string;
+  key: string;
   id: string;
-  publicKey: string;
-  signatures: object;
-  type: string;
-  sign: void;
-  verify: void;
-};
+}) {
+  const { name, password, collection, key, id } = args;
 
-type IdentitySchema = {
-  id: string;
-  keys: [];
-  identity: Identity;
-};
+  const encryptedDexieStorage = wrappedKeyEncryptionCryptoJsStorage({
+    storage: getRxStorageDexie(),
+  });
 
-export const identitySchema: RxJsonSchema<IdentitySchema> = {
-  version: 0,
-  primaryKey: 'id',
-  type: 'object',
-  properties: {
-    id: {
-      type: 'string',
-      maxLength: 100,
-    },
-    keys: {
-      type: 'array',
-    },
-    identity: {
-      type: 'object',
-    },
-  },
-  required: ['id', 'keys'],
-  encrypted: ['keys', 'identity'],
-};
+  const db = await createRxDatabase({
+    name,
+    password,
+    storage: encryptedDexieStorage,
+    multiInstance: false,
+  });
 
-export type DynamicSchemaBase = {
-  [key: string]: TopLevelProperty;
-};
-
-export function generateDynamicSchema<DynamicSchema extends DynamicSchemaBase>(
-  schema: Partial<RxJsonSchema<DynamicSchema>>,
-): RxJsonSchema<DynamicSchema> {
-  return {
-    version: 0,
-    primaryKey: 'id' as PrimaryKey<DynamicSchema>,
-    type: 'object',
-    ...schema,
-    properties: {
-      id: {
-        type: 'string',
-        maxLength: 100,
-      },
-      ...schema.properties,
-    } as { [key in Extract<keyof DynamicSchema, string>]: TopLevelProperty },
-    required: [
-      'id',
-      ...(schema.required || []),
-    ] as RxJsonSchema<DynamicSchema>['required'],
-    encrypted: [],
+  const propType = {
+    type: 'string',
   };
+
+  const collections = await db.addCollections({
+    [collection]: {
+      schema: {
+        version: 0,
+        primaryKey: 'id',
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            maxLength: 100,
+          },
+          [key]: propType,
+          [id]: propType,
+        },
+        encrypted: [key, id],
+      },
+    },
+  });
+
+  return collections;
 }

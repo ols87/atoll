@@ -1,21 +1,16 @@
 import { customElement, noShadowDOM } from 'solid-element';
-import {
-  generateIdentity,
-  exportIdentity,
-  Identity,
-  decryptIdentity,
-} from '@atoll/sdk';
+import { generateIdentity, exportIdentity, decryptIdentity } from '@atoll/sdk';
 import { createSignal } from 'solid-js';
 
 customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
   noShadowDOM();
-  const [identity, setIdentity] = createSignal<Identity>(null);
+  const [identity, setIdentity] = createSignal(null);
 
   const generateID = async () => setIdentity(await generateIdentity());
 
   const exportID = async () => await exportIdentity();
 
-  const decryptID = async () => await decryptIdentity();
+  const decryptID = async () => setIdentity(await decryptIdentity());
 
   return (
     <>

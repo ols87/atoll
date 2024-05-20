@@ -1,27 +1,41 @@
-import { Identities } from '@orbitdb/core';
 import { identityTransferDatabase } from './identity.schema';
-import {
-  getIdentityKeysFromStore,
-  writeIdentityKeysToStore,
-} from './identity.keystore';
 import { rand, encrypt, decrypt } from '../utils';
 
+const crypto = window.crypto.subtle;
+
 export async function generateIdentity(id?: string) {
-  id = id || Date.now().toString();
+  const identity = await crypto.generateKey(
+    {
+      name: 'ECDSA',
+      namedCurve: 'P-384',
+    },
+    true,
+    ['sign', 'verify'],
+  );
 
-  const identities = await Identities();
-  const identity = await identities.createIdentity({ id });
+  const privateKey = await crypto.exportKey('jwk', identity.privateKey);
+  const publicKey = await crypto.exportKey('jwk', identity.publicKey);
 
-  console.log(identity);
+  const formattedPublicKey = `${publicKey.x}${publicKey.y}`;
+  const formattedPrivateKey = `${privateKey.d}`;
 
-  localStorage.setItem('identity', JSON.stringify(identity));
+  console.log(privateKey);
+  console.log(publicKey);
+
+  localStorage.setItem(
+    'identity',
+    JSON.stringify({
+      publicKey: formattedPublicKey,
+      privateKey: formattedPrivateKey,
+    }),
+  );
 
   return identity;
 }
 
 export async function exportIdentity() {
   const identity = JSON.parse(localStorage.getItem('identity'));
-  const keys = await getIdentityKeysFromStore();
+  const { publicKey, privateKey } = identity;
 
   const name = rand();
   const password = rand();
@@ -39,8 +53,7 @@ export async function exportIdentity() {
 
   await collections[collection].insert({
     id: key,
-    [key]: encrypt(keys, 'foo'),
-    [id]: encrypt(identity, 'foo'),
+    [id]: encrypt({ publicKey, privateKey }, 'foo'),
   });
 
   const exportKey = `${name}::${password}::${collection}::${key}::${id}`;
@@ -67,14 +80,51 @@ export async function decryptIdentity() {
 
   const keyEntry = await collections[collection].findOne(key).exec();
 
-  const decryptedKeys = decrypt(keyEntry[key], 'foo');
-
   const decryptedIdentity = decrypt(keyEntry[id], 'foo');
 
   localStorage.setItem('identity', JSON.stringify(decryptedIdentity));
 
-  await writeIdentityKeysToStore(new ArrayBuffer(74), decryptedKeys[0]);
-  await writeIdentityKeysToStore(new ArrayBuffer(21), decryptedKeys[1]);
+  const x = decryptedIdentity.publicKey.slice(0, 64);
+  const y = decryptedIdentity.publicKey.slice(64);
+
+  const publicKey = await crypto.importKey(
+    'jwk',
+    {
+      x,
+      y,
+      kty: 'EC',
+      crv: 'P-384',
+      ext: true,
+      key_ops: ['verify'],
+    },
+    {
+      name: 'ECDSA',
+      namedCurve: 'P-384',
+    },
+    true,
+    ['verify'],
+  );
+
+  const privatekey = await crypto.importKey(
+    'jwk',
+    {
+      d: decryptedIdentity.privateKey,
+      x,
+      y,
+      kty: 'EC',
+      crv: 'P-384',
+      ext: true,
+      key_ops: ['sign'],
+    },
+    {
+      name: 'ECDSA',
+      namedCurve: 'P-384',
+    },
+    true,
+    ['sign'],
+  );
+
+  console.log(publicKey, privatekey);
 
   return decryptedIdentity;
 }

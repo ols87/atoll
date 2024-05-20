@@ -1,11 +1,5 @@
 import { customElement, noShadowDOM } from 'solid-element';
-import {
-  generateIdentity,
-  exportIdentity,
-  decryptIdentity,
-  createDatabase,
-  getDatabase,
-} from '@atoll/sdk';
+import { generateIdentity, exportIdentity, decryptIdentity } from '@atoll/sdk';
 import { createSignal } from 'solid-js';
 
 customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
@@ -17,16 +11,6 @@ customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
   const exportID = async () => await exportIdentity();
 
   const decryptID = async () => setIdentity(await decryptIdentity());
-
-  const getDB = async () => await getDatabase();
-
-  const createDB = async () =>
-    setIdentity(
-      await createDatabase({
-        identity: identity(),
-        name: 'atoll',
-      }),
-    );
 
   return (
     <>
@@ -60,8 +44,6 @@ customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
       <button onClick={generateID}>Generate ID</button>
       <button onClick={exportID}>Export Private Key</button>
       <button onClick={decryptID}>Import ID</button>
-      <button onClick={createDB}>Create DB</button>
-      <button onClick={getDB}>Get DB</button>
     </>
   );
 });

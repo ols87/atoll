@@ -9,16 +9,34 @@ export function decrypt(value: string, key: string) {
 }
 
 export function rand(length?: number) {
-  let result = '';
-  const characters = 'abcdefghijklmnopqrstuvwxyz';
-  const otherChars = '0123456789';
-  const charactersLength = characters.length;
-  const otherCharsLength = length || 36;
+  const letters = 'abcdefghijklmnopqrstuvwxyz';
+  const numbers = '0123456789';
+  const lettersLength = letters.length;
+  const numbersLength = numbers.length;
 
-  result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  let lettersCount = Math.ceil((length || 36) / 2);
+  const numbersCount = Math.floor((length || 36) / 2);
 
-  for (let i = 1; i < otherCharsLength; i++) {
-    result += otherChars.charAt(Math.floor(Math.random() * otherChars.length));
+  let result = letters.charAt(Math.floor(Math.random() * lettersLength));
+  lettersCount--;
+
+  for (let i = 0; i < lettersCount; i++) {
+    result += letters.charAt(Math.floor(Math.random() * lettersLength));
+  }
+
+  for (let i = 0; i < numbersCount; i++) {
+    result += numbers.charAt(Math.floor(Math.random() * numbersLength));
+  }
+
+  // Shuffle the result
+  result = result
+    .split('')
+    .sort(() => 0.5 - Math.random())
+    .join('');
+
+  // Ensure the first character is a letter
+  while (numbers.includes(result[0])) {
+    result = result.slice(1) + result[0];
   }
 
   return result;

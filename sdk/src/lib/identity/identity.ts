@@ -1,74 +1,58 @@
 import { identityTransferDatabase } from './identity.schema';
 import { rand, encrypt, decrypt } from '../utils';
+import { ec as EC } from 'elliptic';
+import * as bip39 from 'bip39';
+import { Buffer } from 'buffer';
 
-const crypto = window.crypto.subtle;
+(window as any).Buffer = Buffer;
 
-const keyPairFormat = {
-  name: 'ECDSA',
-  namedCurve: 'P-384',
-};
+export interface Identity {
+  seedPhrase: string;
+  publicKey: string;
+  privateKey: string;
+}
 
-export function addIdentityToStore(identity: any) {
+export function addIdentityToStore(identity: Identity) {
   localStorage.setItem('identity', JSON.stringify(identity));
 }
 
-export function getIdentityFromStore() {
+export function getIdentityFromStore(): Identity {
   return JSON.parse(localStorage.getItem('identity'));
 }
 
-export async function generateIdentity() {
-  const keys = await crypto.generateKey(keyPairFormat, true, [
-    'sign',
-    'verify',
-  ]);
-
-  const privateKey = await crypto.exportKey('jwk', keys.privateKey);
-  const publicKey = await crypto.exportKey('jwk', keys.publicKey);
-
-  const formattedPublicKey = `${publicKey.x}${publicKey.y}`;
-  const formattedPrivateKey = `${privateKey.d}`;
-
-  addIdentityToStore({
-    publicKey: formattedPublicKey,
-    privateKey: formattedPrivateKey,
-  });
-
-  return keys;
-}
-
-export async function exportIdentityString(encryptionPassword: string) {
-  const identity = getIdentityFromStore();
-  const { publicKey, privateKey } = identity;
-  const encryptedIdentity = encrypt(
-    { publicKey, privateKey },
-    encryptionPassword,
-  );
-
-  console.log(encryptedIdentity);
-
-  return encryptedIdentity;
-}
-
-export async function importIdentityString(
-  encryptedIdentity: string,
-  encryptionPassword: string,
+export async function generateIdentity(
+  // Remove this default seedPhrase
+  seedPhrase = 'differ sponsor huge blind spend clog dizzy uncle please shiver core name',
 ) {
-  const identity = decrypt(encryptedIdentity, encryptionPassword);
+  const seed = bip39.mnemonicToSeedSync(seedPhrase);
+  const ec = new EC('secp256k1');
+  const keyPair = ec.keyFromPrivate(seed);
+
+  const publicKey = keyPair.getPublic('hex');
+  const privateKey = keyPair.getPrivate('hex');
+
+  console.log('Public Key:', publicKey);
+  console.log('Private Key:', privateKey);
+
+  const identity = {
+    seedPhrase,
+    privateKey,
+    publicKey,
+  };
 
   addIdentityToStore(identity);
 
-  return await importIdentityKeys(identity);
+  return identity;
 }
 
 export async function exportIdentityDatabase(encryptionPassword: string) {
   const identity = getIdentityFromStore();
-  const { publicKey, privateKey } = identity;
 
-  const name = rand();
-  const password = rand();
-  const collection = rand();
-  const key = rand();
-  const id = rand();
+  const [password, name, collection, key, id] = Array(5)
+    .fill(null)
+    .map((value, index) => {
+      return rand(Math.round(12 / (index + 1)));
+    });
 
   const collections = await identityTransferDatabase({
     name,
@@ -80,10 +64,10 @@ export async function exportIdentityDatabase(encryptionPassword: string) {
 
   await collections[collection].insert({
     id: key,
-    [id]: encrypt({ publicKey, privateKey }, encryptionPassword),
+    [id]: encrypt(identity.seedPhrase, encryptionPassword),
   });
 
-  const exportKey = `${name}::${password}::${collection}::${key}::${id}`;
+  const exportKey = `${name}:${password}:${collection}:${key}:${id}`;
 
   // Remove This
   localStorage.setItem('exportKey', exportKey);
@@ -97,7 +81,7 @@ export async function importIdentityDatabase(encryptionPassword: string) {
   // Remove This
   const exportKey = localStorage.getItem('exportKey');
 
-  const [name, password, collection, key, id] = exportKey.split('::');
+  const [name, password, collection, key, id] = exportKey.split(':');
 
   const collections = await identityTransferDatabase({
     name,
@@ -111,47 +95,5 @@ export async function importIdentityDatabase(encryptionPassword: string) {
 
   const identity = decrypt(identityEntry[id], encryptionPassword);
 
-  addIdentityToStore(identity);
-
-  return await importIdentityKeys(identity);
-}
-
-async function importIdentityKeys(identity: any) {
-  const keyJWK = {
-    kty: 'EC',
-    crv: 'P-384',
-    ext: true,
-    x: identity.publicKey.slice(0, 64),
-    y: identity.publicKey.slice(64),
-  };
-
-  const publicKey = await crypto.importKey(
-    'jwk',
-    {
-      ...keyJWK,
-      key_ops: ['verify'],
-    },
-    keyPairFormat,
-    true,
-    ['verify'],
-  );
-
-  const privateKey = await crypto.importKey(
-    'jwk',
-    {
-      ...keyJWK,
-      d: identity.privateKey,
-      key_ops: ['sign'],
-    },
-    keyPairFormat,
-    true,
-    ['sign'],
-  );
-
-  console.log(publicKey, privateKey);
-
-  return {
-    publicKey,
-    privateKey,
-  };
+  return await generateIdentity(identity.seed);
 }

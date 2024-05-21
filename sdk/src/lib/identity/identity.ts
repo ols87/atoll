@@ -3,38 +3,65 @@ import { rand, encrypt, decrypt } from '../utils';
 
 const crypto = window.crypto.subtle;
 
-export async function generateIdentity(id?: string) {
-  const identity = await crypto.generateKey(
-    {
-      name: 'ECDSA',
-      namedCurve: 'P-384',
-    },
-    true,
-    ['sign', 'verify'],
-  );
+const keyPairFormat = {
+  name: 'ECDSA',
+  namedCurve: 'P-384',
+};
 
-  const privateKey = await crypto.exportKey('jwk', identity.privateKey);
-  const publicKey = await crypto.exportKey('jwk', identity.publicKey);
+export function addIdentityToStore(identity: any) {
+  localStorage.setItem('identity', JSON.stringify(identity));
+}
+
+export function getIdentityFromStore() {
+  return JSON.parse(localStorage.getItem('identity'));
+}
+
+export async function generateIdentity() {
+  const keys = await crypto.generateKey(keyPairFormat, true, [
+    'sign',
+    'verify',
+  ]);
+
+  const privateKey = await crypto.exportKey('jwk', keys.privateKey);
+  const publicKey = await crypto.exportKey('jwk', keys.publicKey);
 
   const formattedPublicKey = `${publicKey.x}${publicKey.y}`;
   const formattedPrivateKey = `${privateKey.d}`;
 
-  console.log(privateKey);
-  console.log(publicKey);
+  addIdentityToStore({
+    publicKey: formattedPublicKey,
+    privateKey: formattedPrivateKey,
+  });
 
-  localStorage.setItem(
-    'identity',
-    JSON.stringify({
-      publicKey: formattedPublicKey,
-      privateKey: formattedPrivateKey,
-    }),
-  );
-
-  return identity;
+  return keys;
 }
 
-export async function exportIdentity() {
-  const identity = JSON.parse(localStorage.getItem('identity'));
+export async function exportIdentityString(encryptionPassword: string) {
+  const identity = getIdentityFromStore();
+  const { publicKey, privateKey } = identity;
+  const encryptedIdentity = encrypt(
+    { publicKey, privateKey },
+    encryptionPassword,
+  );
+
+  console.log(encryptedIdentity);
+
+  return encryptedIdentity;
+}
+
+export async function importIdentityString(
+  encryptedIdentity: string,
+  encryptionPassword: string,
+) {
+  const identity = decrypt(encryptedIdentity, encryptionPassword);
+
+  addIdentityToStore(identity);
+
+  return await importIdentityKeys(identity);
+}
+
+export async function exportIdentityDatabase(encryptionPassword: string) {
+  const identity = getIdentityFromStore();
   const { publicKey, privateKey } = identity;
 
   const name = rand();
@@ -53,11 +80,12 @@ export async function exportIdentity() {
 
   await collections[collection].insert({
     id: key,
-    [id]: encrypt({ publicKey, privateKey }, 'foo'),
+    [id]: encrypt({ publicKey, privateKey }, encryptionPassword),
   });
 
   const exportKey = `${name}::${password}::${collection}::${key}::${id}`;
 
+  // Remove This
   localStorage.setItem('exportKey', exportKey);
 
   console.log(exportKey);
@@ -65,7 +93,8 @@ export async function exportIdentity() {
   return exportKey;
 }
 
-export async function decryptIdentity() {
+export async function importIdentityDatabase(encryptionPassword: string) {
+  // Remove This
   const exportKey = localStorage.getItem('exportKey');
 
   const [name, password, collection, key, id] = exportKey.split('::');
@@ -78,53 +107,51 @@ export async function decryptIdentity() {
     id,
   });
 
-  const keyEntry = await collections[collection].findOne(key).exec();
+  const identityEntry = await collections[collection].findOne(key).exec();
 
-  const decryptedIdentity = decrypt(keyEntry[id], 'foo');
+  const identity = decrypt(identityEntry[id], encryptionPassword);
 
-  localStorage.setItem('identity', JSON.stringify(decryptedIdentity));
+  addIdentityToStore(identity);
 
-  const x = decryptedIdentity.publicKey.slice(0, 64);
-  const y = decryptedIdentity.publicKey.slice(64);
+  return await importIdentityKeys(identity);
+}
+
+async function importIdentityKeys(identity: any) {
+  const keyJWK = {
+    kty: 'EC',
+    crv: 'P-384',
+    ext: true,
+    x: identity.publicKey.slice(0, 64),
+    y: identity.publicKey.slice(64),
+  };
 
   const publicKey = await crypto.importKey(
     'jwk',
     {
-      x,
-      y,
-      kty: 'EC',
-      crv: 'P-384',
-      ext: true,
+      ...keyJWK,
       key_ops: ['verify'],
     },
-    {
-      name: 'ECDSA',
-      namedCurve: 'P-384',
-    },
+    keyPairFormat,
     true,
     ['verify'],
   );
 
-  const privatekey = await crypto.importKey(
+  const privateKey = await crypto.importKey(
     'jwk',
     {
-      d: decryptedIdentity.privateKey,
-      x,
-      y,
-      kty: 'EC',
-      crv: 'P-384',
-      ext: true,
+      ...keyJWK,
+      d: identity.privateKey,
       key_ops: ['sign'],
     },
-    {
-      name: 'ECDSA',
-      namedCurve: 'P-384',
-    },
+    keyPairFormat,
     true,
     ['sign'],
   );
 
-  console.log(publicKey, privatekey);
+  console.log(publicKey, privateKey);
 
-  return decryptedIdentity;
+  return {
+    publicKey,
+    privateKey,
+  };
 }

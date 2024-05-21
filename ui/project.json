@@ -2,5 +2,20 @@
   "name": "ui",
   "$schema": "../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "ui/islands",
-  "tags": []
+  "tags": [],
+  "targets": {
+    "build-storybook": {
+      "executor": "@nx/storybook:build",
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "dist/ui",
+        "configDir": "ui/.storybook"
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    }
+  }
 }

@@ -3,6 +3,8 @@ import {
   generateIdentity,
   importIdentityDatabase,
   exportIdentityDatabase,
+  uploadMedia,
+  rand,
 } from '@atoll/sdk';
 import { createSignal } from 'solid-js';
 
@@ -16,6 +18,8 @@ customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
 
   const importIdDB = async () =>
     setIdentity(await importIdentityDatabase('foo'));
+
+  const upload = async () => await uploadMedia(`${rand(20)}`, `${rand(20)}`);
 
   return (
     <>
@@ -49,6 +53,7 @@ customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
       <button onClick={generateID}>Generate ID</button>
       <button onClick={exportIdDb}>Export ID DB</button>
       <button onClick={importIdDB}>Import ID DB</button>
+      <button onClick={upload}>Upload Media</button>
     </>
   );
 });

@@ -2,11 +2,12 @@
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import { resolve } from 'path';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: `${process.cwd()}node_modules/.vite/<%= fileName %>`,
-  plugins: [solidPlugin()],
+  cacheDir: `${process.cwd()}node_modules/.vite/example`,
+  plugins: [solidPlugin(), tsconfigPaths()],
   build: {
     lib: {
       entry: resolve(__dirname, './src/<%= fileName %>.element.tsx'),
@@ -16,7 +17,6 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    cacheDir: `${process.cwd()}/node_modules/.vitest`,
     environment: 'jsdom',
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],

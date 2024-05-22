@@ -19,5 +19,5 @@
       "cli": ["./cli/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "tmp", "ui"]
+  "exclude": ["**/node_modules/**/*", "tmp", "ui"]
 }

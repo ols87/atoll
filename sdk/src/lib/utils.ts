@@ -47,23 +47,65 @@ export function initEC() {
   return new EC('secp256k1');
 }
 
-export function verifySignature(args: {
+export async function verifySignature(args: {
   publicKey: string;
   signature: string;
   data: string;
 }) {
   const { publicKey, signature, data } = args;
-  return initEC().keyFromPublic(publicKey, 'hex').verify(data, signature);
+  const key = initEC().keyFromPublic(publicKey, 'hex');
+  const encoder = new TextEncoder();
+  const dataEncoded = encoder.encode(data);
+  const msgHashBuffer = await window.crypto.subtle.digest(
+    'SHA-256',
+    dataEncoded,
+  );
+  const msgHashArray = Array.from(new Uint8Array(msgHashBuffer));
+  const msgHash = msgHashArray
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  return key.verify(msgHash, signature);
 }
 
 export async function signData(privateKey: string, data: string) {
-  const hashBuffer = await window.crypto.subtle.digest(
+  const key = initEC().keyFromPrivate(privateKey);
+  const encoder = new TextEncoder();
+  const dataEncoded = encoder.encode(data);
+  const msgHashBuffer = await window.crypto.subtle.digest(
     'SHA-256',
-    new TextEncoder().encode(data),
+    dataEncoded,
   );
-  const hash = Array.from(new Uint8Array(hashBuffer))
+  const msgHashArray = Array.from(new Uint8Array(msgHashBuffer));
+  const msgHash = msgHashArray
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
+  const signature = key.sign(msgHash);
 
-  return initEC().keyFromPrivate(privateKey).sign(hash);
+  return signature;
 }
+
+export const isDeepEqual = (object1, object2) => {
+  const objKeys1 = Object.keys(object1);
+  const objKeys2 = Object.keys(object2);
+
+  if (objKeys1.length !== objKeys2.length) return false;
+
+  for (const key of objKeys1) {
+    const value1 = object1[key];
+    const value2 = object2[key];
+
+    const isObjects = isObject(value1) && isObject(value2);
+
+    if (
+      (isObjects && !isDeepEqual(value1, value2)) ||
+      (!isObjects && value1 !== value2)
+    ) {
+      return false;
+    }
+  }
+  return true;
+};
+
+const isObject = (object) => {
+  return object != null && typeof object === 'object';
+};

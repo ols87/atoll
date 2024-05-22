@@ -29,6 +29,7 @@ customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
   const watch = async () => {
     const publicKey = document.getElementById('publicKey') as HTMLInputElement;
     const profile = await initProfileDatabase(publicKey.value);
+    console.log(profile);
     profile.$.subscribe((changeEvent) => {
       console.log(changeEvent);
     });

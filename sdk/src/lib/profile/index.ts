@@ -1,4 +1,5 @@
 import {
+  RxCollection,
   RxConflictHandlerInput,
   RxDatabase,
   RxJsonSchema,
@@ -13,7 +14,7 @@ import {
   getConnectionHandlerSimplePeer,
 } from 'rxdb/plugins/replication-webrtc';
 import { Identity } from '../identity';
-import { signData, verifySignature } from '../utils';
+import { isDeepEqual, signData, verifySignature } from '../utils';
 
 addRxPlugin(RxDBUpdatePlugin);
 addRxPlugin(RxDBDevModePlugin);
@@ -34,13 +35,20 @@ type ProfileSchema = {
   name: SignedProp;
 };
 
-let profileDatabase: RxDatabase;
+const profileDatabases: {
+  [key: string]: RxDatabase<ProfileSchema>;
+} = {};
 
-export const initProfileDatabase = async (publicKey: string) => {
-  if (profileDatabase) return profileDatabase.collections.profile;
+export const initProfileDatabase = async (
+  publicKey: string,
+): Promise<RxCollection> => {
+  const name = `atoll__profile__${publicKey}`;
 
-  profileDatabase = await createRxDatabase({
-    name: `atoll__${publicKey}__profile`,
+  if (profileDatabases[name])
+    return profileDatabases[name].collections['profile'];
+
+  profileDatabases[name] = await createRxDatabase({
+    name,
     storage: getRxStorageDexie(),
   });
 
@@ -60,42 +68,54 @@ export const initProfileDatabase = async (publicKey: string) => {
     required: ['id', 'name'],
   };
 
-  const collections = await profileDatabase.addCollections({
+  const collections = await profileDatabases[name].addCollections({
     profile: {
       schema: profileSchema,
       conflictHandler: (instance: RxConflictHandlerInput<ProfileSchema>) => {
         const { newDocumentState, realMasterState } = instance;
 
-        let isEqual = false;
-
-        Object.keys(newDocumentState).forEach((key) => {
-          const prop = newDocumentState[key] as SignedProp;
-
-          isEqual = verifySignature({
-            publicKey,
-            data: prop.data,
-            signature: prop.signature,
+        if (isDeepEqual(newDocumentState, realMasterState))
+          return Promise.resolve({
+            isEqual: true,
           });
+
+        let isSigned = true;
+
+        Object.keys(realMasterState).forEach(async (key) => {
+          const prop = realMasterState[key] as SignedProp;
+
+          if (!isSigned) return;
+
+          if (prop.data) {
+            console.log(prop);
+            isSigned = await verifySignature({
+              publicKey,
+              data: prop.data,
+              signature: prop.signature,
+            });
+
+            // console.log('Conflict', prop.data, prop.signature, publicKey);
+          }
         });
 
+        console.log(isSigned);
+
         return Promise.resolve({
-          isEqual,
-          documentData: isEqual ? newDocumentState : realMasterState,
+          isEqual: false,
+          documentData: isSigned ? realMasterState : newDocumentState,
         });
       },
     },
   });
 
-  collections.profile.$.subscribe((changeEvent) => {
-    console.log(changeEvent);
-  });
-
   const pool = await replicateWebRTC({
     collection: collections.profile,
-    topic: `atoll:${publicKey}:profile:pool`,
+    topic: `${name.substring(0, 64)}-profile-pool`,
     connectionHandlerCreator: getConnectionHandlerSimplePeer({
       signalingServerUrl: 'ws://77.37.67.224:8080',
     }),
+    pull: {},
+    push: {},
   });
 
   pool.error$.subscribe((err) => console.log(err));
@@ -107,6 +127,10 @@ export const initProfileDatabase = async (publicKey: string) => {
 export async function updateProfile(identity: Identity, data: string) {
   const signature = await signData(identity.privateKey, data);
 
+  console.log(
+    await verifySignature({ publicKey: identity.publicKey, data, signature }),
+  );
+
   const insertData: ProfileSchema = {
     id: '1',
     name: {
@@ -117,5 +141,5 @@ export async function updateProfile(identity: Identity, data: string) {
 
   const profile = await initProfileDatabase(identity.publicKey);
 
-  await profile.upsert(insertData);
+  profile.upsert(insertData);
 }

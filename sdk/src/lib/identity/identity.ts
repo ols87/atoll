@@ -3,6 +3,7 @@ import { rand, encrypt, decrypt } from '../utils';
 import { ec as EC } from 'elliptic';
 import * as bip39 from 'bip39';
 import { Buffer } from 'buffer';
+import { initProfileDatabase, updateProfile } from '../profile';
 
 (window as any).Buffer = Buffer;
 
@@ -22,7 +23,7 @@ export function getIdentityFromStore(): Identity {
 
 export async function generateIdentity(
   // Remove this default seedPhrase
-  seedPhrase = 'differ sponsor huge blind spend clog dizzy uncle please shiver core name',
+  seedPhrase = bip39.generateMnemonic(),
 ) {
   const seed = bip39.mnemonicToSeedSync(seedPhrase);
   const ec = new EC('secp256k1');
@@ -41,6 +42,10 @@ export async function generateIdentity(
   };
 
   addIdentityToStore(identity);
+
+  await initProfileDatabase(identity);
+
+  await updateProfile(identity, 'Atoll User');
 
   return identity;
 }

@@ -1,6 +1,7 @@
 import { unixfs } from '@helia/unixfs';
 import { createHelia } from 'helia';
-
+import { strings } from '@helia/strings';
+import { rand } from '../utils';
 let helia = null;
 
 export async function uploadMedia(name: string, content: string) {
@@ -11,29 +12,19 @@ export async function uploadMedia(name: string, content: string) {
     console.log('Creating Helia node...');
 
     helia = await createHelia();
-  }
 
-  const encoder = new TextEncoder();
-
-  const file = {
-    path: `${name}`,
-    content: encoder.encode(content),
-  };
-
-  const fs = unixfs(helia);
-
-  const cid = await fs.addFile(file, helia.blockstore);
-
-  const decoder = new TextDecoder();
-  let text = '';
-
-  for await (const chunk of fs.cat(cid)) {
-    text += decoder.decode(chunk, {
-      stream: true,
+    helia.libp2p.addEventListener('peer:discovery', (evt) => {
+      (window as any).discoveredPeers?.set(
+        evt.detail.id.toString(),
+        evt.detail,
+      );
+      console.log(`Discovered peer ${evt.detail.id.toString()}`);
     });
   }
 
-  console.log(text);
+  const string = strings(helia);
 
-  console.log(`Preview: https://ipfs.io/ipfs/${cid}`);
+  const cid = await string.add(rand(20));
+
+  console.log(`Preview: https://ipfs.io/ipfs/${cid.toString()}`);
 }

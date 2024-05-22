@@ -1,4 +1,5 @@
 import { AES, enc } from 'crypto-js';
+import { ec as EC } from 'elliptic';
 
 export function encrypt(value: any, key: string) {
   return AES.encrypt(JSON.stringify(value), key).toString();
@@ -40,4 +41,29 @@ export function rand(length?: number) {
   }
 
   return result;
+}
+
+export function initEC() {
+  return new EC('secp256k1');
+}
+
+export function verifySignature(args: {
+  publicKey: string;
+  signature: string;
+  data: string;
+}) {
+  const { publicKey, signature, data } = args;
+  return initEC().keyFromPublic(publicKey, 'hex').verify(data, signature);
+}
+
+export async function signData(privateKey: string, data: string) {
+  const hashBuffer = await window.crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(data),
+  );
+  const hash = Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  return initEC().keyFromPrivate(privateKey).sign(hash);
 }

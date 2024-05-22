@@ -5,6 +5,7 @@
   "scripts": {},
   "private": true,
   "dependencies": {
+    "@helia/strings": "^3.0.4",
     "@helia/unixfs": "^3.0.6",
     "@nx/devkit": "19.0.2",
     "axios": "^1.6.0",

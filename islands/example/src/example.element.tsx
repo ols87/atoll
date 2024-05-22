@@ -3,6 +3,7 @@ import {
   generateIdentity,
   importIdentityDatabase,
   exportIdentityDatabase,
+  updateProfile,
   uploadMedia,
   rand,
 } from '@atoll/sdk';
@@ -14,12 +15,15 @@ customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
 
   const generateID = async () => setIdentity(await generateIdentity());
 
+  const updateName = async () => await updateProfile(identity(), 'Foobar');
+
   const exportIdDb = async () => await exportIdentityDatabase('foo');
 
   const importIdDB = async () =>
     setIdentity(await importIdentityDatabase('foo'));
 
-  const upload = async () => await uploadMedia(`${rand(20)}`, `${rand(20)}`);
+  const upload = async () =>
+    await uploadMedia(`${rand(20)}.txt`, `${rand(20)}`);
 
   return (
     <>
@@ -51,6 +55,7 @@ customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
         {identity()?.publicKey}
       </div>
       <button onClick={generateID}>Generate ID</button>
+      <button onClick={updateName}>Update Name</button>
       <button onClick={exportIdDb}>Export ID DB</button>
       <button onClick={importIdDB}>Import ID DB</button>
       <button onClick={upload}>Upload Media</button>

@@ -14,7 +14,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@atoll/sdk": ["sdk/src/index.ts"],
+      "@atoll/sdk": ["sdk/lib/index.ts"],
       "@ui/*": ["./ui/*"],
       "cli": ["./cli/src/index.ts"]
     }

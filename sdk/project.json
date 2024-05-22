@@ -20,7 +20,7 @@
         "outputPath": "dist/sdk",
         "tsConfig": "sdk/tsconfig.lib.json",
         "packageJson": "sdk/package.json",
-        "main": "sdk/src/index.ts",
+        "main": "sdk/lib/index.ts",
         "assets": ["sdk/*.md"]
       }
     },

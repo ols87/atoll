@@ -1,5 +1,5 @@
 import { RxCollection, RxConflictHandlerInput } from 'rxdb';
-import { isDeepEqual } from '../utils';
+import { isDeepEqual } from './utils';
 import {
   replicateWebRTC,
   getConnectionHandlerSimplePeer,

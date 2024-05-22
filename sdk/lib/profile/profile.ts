@@ -7,7 +7,7 @@ import {
   createRxDatabase,
 } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
-import { verifySignedWrite, replicateCollection } from '../utils/database';
+import { verifySignedWrite, replicateCollection } from '../utils';
 
 const w = window as any;
 

@@ -1,5 +1,5 @@
 import { RxJsonSchema } from 'rxdb';
-import { SignedProp } from '../utils/database';
+import { SignedProp } from '../utils';
 
 export type ProfileSchema = {
   id: string;

@@ -2,7 +2,9 @@
   "name": "@atoll",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "docs": "typedoc ./sdk/index.ts"
+  },
   "private": true,
   "dependencies": {
     "@helia/strings": "^3.0.4",
@@ -23,6 +25,7 @@
     "solid-element": "^1.8.0",
     "solid-js": "^1.8.17",
     "tslib": "^2.6.2",
+    "typedoc": "^0.25.13",
     "vite-plugin-solid": "^2.10.2"
   },
   "devDependencies": {

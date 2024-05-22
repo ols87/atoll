@@ -1,4 +1,9 @@
-import { RxConflictHandlerInput, RxJsonSchema, addRxPlugin } from 'rxdb';
+import {
+  RxConflictHandlerInput,
+  RxDatabase,
+  RxJsonSchema,
+  addRxPlugin,
+} from 'rxdb';
 import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
 import { createRxDatabase } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
@@ -20,7 +25,7 @@ w.process = {
 };
 
 type SignedProp = {
-  value: string;
+  data: string;
   signature: any;
 };
 
@@ -29,9 +34,13 @@ type ProfileSchema = {
   name: SignedProp;
 };
 
-export const initProfileDatabase = async (identity: Identity) => {
-  const db = await createRxDatabase({
-    name: `atoll__${identity.publicKey}__profile`,
+let profileDatabase: RxDatabase;
+
+export const initProfileDatabase = async (publicKey: string) => {
+  if (profileDatabase) return profileDatabase.collections.profile;
+
+  profileDatabase = await createRxDatabase({
+    name: `atoll__${publicKey}__profile`,
     storage: getRxStorageDexie(),
   });
 
@@ -51,7 +60,7 @@ export const initProfileDatabase = async (identity: Identity) => {
     required: ['id', 'name'],
   };
 
-  const collections = await db.addCollections({
+  const collections = await profileDatabase.addCollections({
     profile: {
       schema: profileSchema,
       conflictHandler: (instance: RxConflictHandlerInput<ProfileSchema>) => {
@@ -63,8 +72,8 @@ export const initProfileDatabase = async (identity: Identity) => {
           const prop = newDocumentState[key] as SignedProp;
 
           isEqual = verifySignature({
-            publicKey: identity.publicKey,
-            data: prop.value,
+            publicKey,
+            data: prop.data,
             signature: prop.signature,
           });
         });
@@ -81,32 +90,32 @@ export const initProfileDatabase = async (identity: Identity) => {
     console.log(changeEvent);
   });
 
+  const pool = await replicateWebRTC({
+    collection: collections.profile,
+    topic: `atoll:${publicKey}:profile:pool`,
+    connectionHandlerCreator: getConnectionHandlerSimplePeer({
+      signalingServerUrl: 'ws://77.37.67.224:8080',
+    }),
+  });
+
+  pool.error$.subscribe((err) => console.log(err));
+  pool.peerStates$.subscribe((peerState) => console.log(peerState));
+
   return collections.profile;
-
-  // const pool = await replicateWebRTC({
-  //   collection: collections.profile,
-  //   topic: `atoll:${identity.publicKey}:profile:pool`,
-  //   connectionHandlerCreator: getConnectionHandlerSimplePeer({
-  //     signalingServerUrl: 'ws://77.37.67.224:8080',
-  //   }),
-  // });
-
-  // pool.error$.subscribe((err) => console.log(err));
-  // pool.peerStates$.subscribe((peerState) => console.log(peerState));
 };
 
-export async function updateProfile(identity: Identity, name: string) {
-  const signature = await signData(identity.privateKey, name);
+export async function updateProfile(identity: Identity, data: string) {
+  const signature = await signData(identity.privateKey, data);
 
   const insertData: ProfileSchema = {
     id: '1',
     name: {
-      value: name,
+      data,
       signature,
     },
   };
 
-  const profile = await initProfileDatabase(identity);
+  const profile = await initProfileDatabase(identity.publicKey);
 
   await profile.upsert(insertData);
 }

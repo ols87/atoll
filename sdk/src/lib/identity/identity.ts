@@ -43,7 +43,7 @@ export async function generateIdentity(
 
   addIdentityToStore(identity);
 
-  await initProfileDatabase(identity);
+  await initProfileDatabase(identity.publicKey);
 
   await updateProfile(identity, 'Atoll User');
 

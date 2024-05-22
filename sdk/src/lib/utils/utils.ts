@@ -1,5 +1,4 @@
 import { AES, enc } from 'crypto-js';
-import { ec as EC } from 'elliptic';
 
 export function encrypt(value: any, key: string) {
   return AES.encrypt(JSON.stringify(value), key).toString();
@@ -41,47 +40,6 @@ export function rand(length?: number) {
   }
 
   return result;
-}
-
-export function initEC() {
-  return new EC('secp256k1');
-}
-
-export async function verifySignature(args: {
-  publicKey: string;
-  signature: string;
-  data: string;
-}) {
-  const { publicKey, signature, data } = args;
-  const key = initEC().keyFromPublic(publicKey, 'hex');
-  const encoder = new TextEncoder();
-  const dataEncoded = encoder.encode(data);
-  const msgHashBuffer = await window.crypto.subtle.digest(
-    'SHA-256',
-    dataEncoded,
-  );
-  const msgHashArray = Array.from(new Uint8Array(msgHashBuffer));
-  const msgHash = msgHashArray
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-  return key.verify(msgHash, signature);
-}
-
-export async function signData(privateKey: string, data: string) {
-  const key = initEC().keyFromPrivate(privateKey);
-  const encoder = new TextEncoder();
-  const dataEncoded = encoder.encode(data);
-  const msgHashBuffer = await window.crypto.subtle.digest(
-    'SHA-256',
-    dataEncoded,
-  );
-  const msgHashArray = Array.from(new Uint8Array(msgHashBuffer));
-  const msgHash = msgHashArray
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-  const signature = key.sign(msgHash);
-
-  return signature;
 }
 
 export const isDeepEqual = (object1, object2) => {

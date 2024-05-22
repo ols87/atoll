@@ -5,6 +5,8 @@ import * as bip39 from 'bip39';
 import { Buffer } from 'buffer';
 import { initProfileDatabase, updateProfile } from '../profile';
 
+const ec = new EC('secp256k1');
+
 (window as any).Buffer = Buffer;
 
 export interface Identity {
@@ -23,7 +25,7 @@ export function getIdentityFromStore(): Identity {
 
 export async function generateIdentity(
   // Remove this default seedPhrase
-  seedPhrase = bip39.generateMnemonic(),
+  seedPhrase = 'stomach win pupil vanish sound ethics switch tribe rapid vintage soldier balance',
 ) {
   const seed = bip39.mnemonicToSeedSync(seedPhrase);
   const ec = new EC('secp256k1');
@@ -31,9 +33,6 @@ export async function generateIdentity(
 
   const publicKey = keyPair.getPublic('hex');
   const privateKey = keyPair.getPrivate('hex');
-
-  console.log('Public Key:', publicKey);
-  console.log('Private Key:', privateKey);
 
   const identity = {
     seedPhrase,
@@ -77,8 +76,6 @@ export async function exportIdentityDatabase(encryptionPassword: string) {
   // Remove This
   localStorage.setItem('exportKey', exportKey);
 
-  console.log(exportKey);
-
   return exportKey;
 }
 
@@ -101,4 +98,41 @@ export async function importIdentityDatabase(encryptionPassword: string) {
   const identity = decrypt(identityEntry[id], encryptionPassword);
 
   return await generateIdentity(identity.seed);
+}
+
+export async function verifySignature(args: {
+  publicKey: string;
+  signature: string;
+  data: string;
+}) {
+  const { publicKey, signature, data } = args;
+  const key = ec.keyFromPublic(publicKey, 'hex');
+  const encoder = new TextEncoder();
+  const dataEncoded = encoder.encode(data);
+  const msgHashBuffer = await window.crypto.subtle.digest(
+    'SHA-256',
+    dataEncoded,
+  );
+  const msgHashArray = Array.from(new Uint8Array(msgHashBuffer));
+  const msgHash = msgHashArray
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  return key.verify(msgHash, signature);
+}
+
+export async function signData(privateKey: string, data: string) {
+  const key = ec.keyFromPrivate(privateKey);
+  const encoder = new TextEncoder();
+  const dataEncoded = encoder.encode(data);
+  const msgHashBuffer = await window.crypto.subtle.digest(
+    'SHA-256',
+    dataEncoded,
+  );
+  const msgHashArray = Array.from(new Uint8Array(msgHashBuffer));
+  const msgHash = msgHashArray
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  const signature = key.sign(msgHash);
+
+  return signature;
 }

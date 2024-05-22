@@ -12,6 +12,7 @@ import { createSignal } from 'solid-js';
 
 customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
   noShadowDOM();
+
   const [identity, setIdentity] = createSignal(null);
 
   const generateID = async () => setIdentity(await generateIdentity());
@@ -22,9 +23,6 @@ customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
 
   const importIdDB = async () =>
     setIdentity(await importIdentityDatabase('foo'));
-
-  const upload = async () =>
-    await uploadMedia(`${rand(20)}.txt`, `${rand(20)}`);
 
   const watch = async () => {
     const publicKey = document.getElementById('publicKey') as HTMLInputElement;
@@ -47,8 +45,11 @@ customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
       <button onClick={updateName}>Update Name</button>
       <button onClick={exportIdDb}>Export ID DB</button>
       <button onClick={importIdDB}>Import ID DB</button>
-      {/* <button onClick={upload}>Upload Media</button> */}
-      <input type="text" id="publicKey" />
+      <input
+        type="text"
+        id="publicKey"
+        value="040759c491906c72ab2277709f857bd735155e609b904805c6a947be6f05899b4c3fe73705fe735dcb1211f4b44d2816446b36db1389af9f7608aeea9dcfa1efaf"
+      />
       <button onClick={watch}>Watch Profile</button>
 
       <style>

@@ -67,3 +67,21 @@ export const isDeepEqual = (object1, object2) => {
 const isObject = (object) => {
   return object != null && typeof object === 'object';
 };
+
+export class AtollUtils {
+  static encrypt(...args: Parameters<typeof encrypt>) {
+    return encrypt(...args);
+  }
+
+  static decrypt(...args: Parameters<typeof decrypt>) {
+    return decrypt(...args);
+  }
+
+  static rand(...args: Parameters<typeof rand>) {
+    return rand(...args);
+  }
+
+  static isDeepEqual(...args: Parameters<typeof isDeepEqual>) {
+    return isDeepEqual(...args);
+  }
+}

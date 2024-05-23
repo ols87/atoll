@@ -136,3 +136,39 @@ export async function signData(privateKey: string, data: string) {
 
   return signature;
 }
+
+export class AtollIdentity {
+  static transferDatabase(
+    ...args: Parameters<typeof identityTransferDatabase>
+  ) {
+    return identityTransferDatabase(...args);
+  }
+
+  static generate(...args: Parameters<typeof generateIdentity>) {
+    return generateIdentity(...args);
+  }
+
+  static exportDatabase(...args: Parameters<typeof exportIdentityDatabase>) {
+    return exportIdentityDatabase(...args);
+  }
+
+  static importDatabase(...args: Parameters<typeof importIdentityDatabase>) {
+    return importIdentityDatabase(...args);
+  }
+
+  static verifySignature(...args: Parameters<typeof verifySignature>) {
+    return verifySignature(...args);
+  }
+
+  static signData(...args: Parameters<typeof signData>) {
+    return signData(...args);
+  }
+
+  static getStore() {
+    return getIdentityFromStore();
+  }
+
+  static addStore(...args: Parameters<typeof addIdentityToStore>) {
+    return addIdentityToStore(...args);
+  }
+}

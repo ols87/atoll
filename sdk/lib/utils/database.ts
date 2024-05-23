@@ -6,6 +6,12 @@ import {
 } from 'rxdb/plugins/replication-webrtc';
 import { verifySignature } from '../identity';
 
+const w = window as any;
+
+w.process = {
+  nextTick: (fn: any, ...args: any) => setTimeout(() => fn(...args)),
+};
+
 export type SignedProp = {
   data: string;
   signature: any;
@@ -58,4 +64,14 @@ export async function replicateCollection(
 
   pool.error$.subscribe((err) => console.log(err));
   pool.peerStates$.subscribe((peerState) => console.log(peerState));
+}
+
+export class AtollDatabase {
+  static verifySignedWrite(...args: Parameters<typeof verifySignedWrite>) {
+    return verifySignedWrite(...args);
+  }
+
+  static replicateCollection(...args: Parameters<typeof replicateCollection>) {
+    return replicateCollection(...args);
+  }
 }

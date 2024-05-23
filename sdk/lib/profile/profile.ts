@@ -9,12 +9,6 @@ import {
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { verifySignedWrite, replicateCollection } from '../utils';
 
-const w = window as any;
-
-w.process = {
-  nextTick: (fn: any, ...args: any) => setTimeout(() => fn(...args)),
-};
-
 const profileDatabases: {
   [key: string]: RxDatabase<ProfileSchema>;
 } = {};
@@ -64,4 +58,17 @@ export async function updateProfile(identity: Identity, data: string) {
   const profile = await initProfileDatabase(identity.publicKey);
 
   profile.upsert(insertData);
+}
+
+export class AtollProfile {
+  static schema = profileSchema;
+  static databases = profileDatabases;
+
+  static initDatabase(...args: Parameters<typeof initProfileDatabase>) {
+    return initProfileDatabase(...args);
+  }
+
+  static update(...args: Parameters<typeof updateProfile>) {
+    return updateProfile(...args);
+  }
 }

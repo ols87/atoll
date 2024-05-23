@@ -1,5 +1,9 @@
 import { AES, enc } from 'crypto-js';
 
+export type TypedObject<KeyMap, T> = {
+  [key in keyof KeyMap]: T;
+};
+
 export function encrypt(value: any, key: string) {
   return AES.encrypt(JSON.stringify(value), key).toString();
 }
@@ -64,9 +68,20 @@ export const isDeepEqual = (object1, object2) => {
   return true;
 };
 
-const isObject = (object) => {
+export const isObject = (object) => {
   return object != null && typeof object === 'object';
 };
+
+export async function hashEncoded(encoded: Uint8Array) {
+  const hashBuffer = await window.crypto.subtle.digest('SHA-256', encoded);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+export function encodeString(string: string) {
+  const encoder = new TextEncoder();
+  return encoder.encode(string);
+}
 
 export class AtollUtils {
   static encrypt(...args: Parameters<typeof encrypt>) {
@@ -83,5 +98,17 @@ export class AtollUtils {
 
   static isDeepEqual(...args: Parameters<typeof isDeepEqual>) {
     return isDeepEqual(...args);
+  }
+
+  static isObject(...args: Parameters<typeof isObject>) {
+    return isObject(...args);
+  }
+
+  static hashEncoded(...args: Parameters<typeof hashEncoded>) {
+    return hashEncoded(...args);
+  }
+
+  static encodeString(...args: Parameters<typeof encodeString>) {
+    return encodeString(...args);
   }
 }

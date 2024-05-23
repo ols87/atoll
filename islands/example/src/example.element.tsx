@@ -3,21 +3,31 @@ import {
   generateIdentity,
   importIdentityDatabase,
   exportIdentityDatabase,
-  updateProfile,
-  uploadMedia,
-  rand,
+  upsertProfile,
   initProfileDatabase,
 } from '@atoll/sdk';
 import { createSignal } from 'solid-js';
+import { toSvg } from 'jdenticon';
+import { toDataURL } from 'qrcode';
 
 customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
   noShadowDOM();
 
   const [identity, setIdentity] = createSignal(null);
+  const [icon, setIcon] = createSignal(null);
+  const [qrCode, setQrCode] = createSignal(null);
 
-  const generateID = async () => setIdentity(await generateIdentity());
+  const generateID = async () => {
+    setIdentity(await generateIdentity());
+    setIcon(toSvg('value', 100));
+    console.log(await toDataURL(identity().publicKey));
+    setQrCode(await toDataURL(identity().publicKey));
+  };
 
-  const updateName = async () => await updateProfile(identity(), 'Foobar');
+  const updateName = async () =>
+    await upsertProfile(identity(), {
+      name: 'John Doe',
+    });
 
   const exportIdDb = async () => await exportIdentityDatabase('foo');
 
@@ -27,7 +37,7 @@ customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
   const watch = async () => {
     const publicKey = document.getElementById('publicKey') as HTMLInputElement;
     const profile = await initProfileDatabase(publicKey.value);
-    console.log(profile);
+
     profile.$.subscribe((changeEvent) => {
       console.log(changeEvent);
     });
@@ -36,7 +46,12 @@ customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
   return (
     <>
       <div class="id">
-        Public Key:
+        <div style="display:flex">
+          {icon() && <div class="avatar" innerHTML={icon()} />}
+
+          {qrCode() && <img class="qr" src={qrCode()} />}
+        </div>
+
         <br />
         {identity()?.publicKey}
       </div>
@@ -80,6 +95,15 @@ customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
           background: #f4f4f4;
           border-radius: 5px;
           border: 1px solid #ccc;
+        }
+
+        .avatar, .qr {
+          width:100px;
+          height:100px;
+          border-radius: 10px;
+          overflow: hidden;
+          background: #fff;
+          border: 1px solid #eee;
         }
       `}
       </style>

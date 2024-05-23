@@ -1,4 +1,8 @@
-import { ProfileSchema, profileSchema } from './profile.schema';
+import {
+  ProfileSchema,
+  ProfileWriteSchema,
+  profileSchema,
+} from './profile.schema';
 import { Identity, signData } from '../identity';
 import {
   RxCollection,
@@ -7,7 +11,12 @@ import {
   createRxDatabase,
 } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
-import { verifySignedWrite, replicateCollection } from '../utils';
+import {
+  verifySignedWrite,
+  replicateCollection,
+  SignedProp,
+  TypedObject,
+} from '../utils';
 
 const profileDatabases: {
   [key: string]: RxDatabase<ProfileSchema>;
@@ -44,20 +53,31 @@ export const initProfileDatabase = async (
   return collections.profile;
 };
 
-export async function updateProfile(identity: Identity, data: string) {
-  const signature = await signData(identity.privateKey, data);
+export async function upsertProfile(
+  identity: Identity,
+  writeData: TypedObject<ProfileWriteSchema, string>,
+) {
+  const { publicKey, privateKey } = identity;
+  const signedData: { [key: string]: SignedProp } = {};
 
-  const insertData: ProfileSchema = {
-    id: '1',
-    name: {
+  for (const key of Object.keys(writeData)) {
+    if (key === 'id') continue;
+
+    const data = writeData[key];
+    const signature = await signData(privateKey, data);
+
+    signedData[key] = {
       data,
       signature,
-    },
-  };
+    };
+  }
 
-  const profile = await initProfileDatabase(identity.publicKey);
+  const profile = await initProfileDatabase(publicKey);
 
-  profile.upsert(insertData);
+  profile.upsert({
+    ...signedData,
+    id: '1',
+  });
 }
 
 export class AtollProfile {
@@ -68,7 +88,7 @@ export class AtollProfile {
     return initProfileDatabase(...args);
   }
 
-  static update(...args: Parameters<typeof updateProfile>) {
-    return updateProfile(...args);
+  static upsert(...args: Parameters<typeof upsertProfile>) {
+    return upsertProfile(...args);
   }
 }

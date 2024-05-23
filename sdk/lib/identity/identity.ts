@@ -1,9 +1,9 @@
 import { identityTransferDatabase } from './identity.schema';
-import { rand, encrypt, decrypt } from '../utils';
+import { rand, encrypt, decrypt, hashEncoded, encodeString } from '../utils';
 import { ec as EC } from 'elliptic';
 import * as bip39 from 'bip39';
 import { Buffer } from 'buffer';
-import { initProfileDatabase, updateProfile } from '../profile';
+import { initProfileDatabase, upsertProfile } from '../profile';
 
 const ec = new EC('secp256k1');
 
@@ -44,7 +44,7 @@ export async function generateIdentity(
 
   await initProfileDatabase(identity.publicKey);
 
-  await updateProfile(identity, 'Atoll User');
+  await upsertProfile(identity, {});
 
   return identity;
 }
@@ -102,37 +102,29 @@ export async function importIdentityDatabase(encryptionPassword: string) {
 
 export async function verifySignature(args: {
   publicKey: string;
-  signature: string;
+  signature: EC.Signature;
   data: string;
 }) {
   const { publicKey, signature, data } = args;
+
   const key = ec.keyFromPublic(publicKey, 'hex');
+
   const encoder = new TextEncoder();
-  const dataEncoded = encoder.encode(data);
-  const msgHashBuffer = await window.crypto.subtle.digest(
-    'SHA-256',
-    dataEncoded,
-  );
-  const msgHashArray = Array.from(new Uint8Array(msgHashBuffer));
-  const msgHash = msgHashArray
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-  return key.verify(msgHash, signature);
+  const encoded = encoder.encode(data);
+  const hashBuffer = await window.crypto.subtle.digest('SHA-256', encoded);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hash = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+
+  return key.verify(hash, signature);
 }
 
-export async function signData(privateKey: string, data: string) {
+export async function signData(privateKey: string, data: unknown) {
   const key = ec.keyFromPrivate(privateKey);
-  const encoder = new TextEncoder();
-  const dataEncoded = encoder.encode(data);
-  const msgHashBuffer = await window.crypto.subtle.digest(
-    'SHA-256',
-    dataEncoded,
-  );
-  const msgHashArray = Array.from(new Uint8Array(msgHashBuffer));
-  const msgHash = msgHashArray
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-  const signature = key.sign(msgHash);
+
+  const encoded = encodeString(JSON.stringify(data));
+  const hash = await hashEncoded(encoded);
+
+  const signature = key.sign(hash);
 
   return signature;
 }

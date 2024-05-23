@@ -1,20 +1,24 @@
-import { RxCollection, RxConflictHandlerInput } from 'rxdb';
+import { RxCollection, RxConflictHandlerInput, addRxPlugin } from 'rxdb';
+import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
 import { isDeepEqual } from './utils';
 import {
   replicateWebRTC,
   getConnectionHandlerSimplePeer,
 } from 'rxdb/plugins/replication-webrtc';
 import { verifySignature } from '../identity';
+import { ec as EC } from 'elliptic';
+addRxPlugin(RxDBDevModePlugin);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const w = window as any;
-
 w.process = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   nextTick: (fn: any, ...args: any) => setTimeout(() => fn(...args)),
 };
 
 export type SignedProp = {
   data: string;
-  signature: any;
+  signature: EC.Signature;
 };
 
 export const signedPropType = {
@@ -24,7 +28,7 @@ export const signedPropType = {
 export async function verifySignedWrite<T>(
   publicKey: string,
   instance: RxConflictHandlerInput<T>,
-): Promise<{ isEqual: false; documentData: any } | { isEqual: true }> {
+): Promise<{ isEqual: false; documentData: T } | { isEqual: true }> {
   const { newDocumentState, realMasterState } = instance;
 
   if (isDeepEqual(newDocumentState, realMasterState))

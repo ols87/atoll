@@ -17,6 +17,10 @@ export type SignedProp = {
   signature: any;
 };
 
+export const signedPropType = {
+  type: 'object',
+};
+
 export async function verifySignedWrite<T>(
   publicKey: string,
   instance: RxConflictHandlerInput<T>,

@@ -1,9 +1,11 @@
 import { RxJsonSchema } from 'rxdb';
-import { SignedProp } from '../utils';
+import { SignedProp, signedPropType } from '../utils';
 
 export type ProfileSchema = {
   id: string;
-  name: SignedProp;
+  avatar?: SignedProp;
+  bio?: SignedProp;
+  name?: SignedProp;
 };
 
 export const profileSchema: RxJsonSchema<ProfileSchema> = {
@@ -15,9 +17,9 @@ export const profileSchema: RxJsonSchema<ProfileSchema> = {
       type: 'string',
       maxLength: 100,
     },
-    name: {
-      type: 'object',
-    },
+    avatar: signedPropType,
+    bio: signedPropType,
+    name: signedPropType,
   },
-  required: ['id', 'name'],
+  required: ['id'],
 };

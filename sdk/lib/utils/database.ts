@@ -64,7 +64,7 @@ export async function replicateCollection(
     collection,
     topic,
     connectionHandlerCreator: getConnectionHandlerSimplePeer({
-      signalingServerUrl: 'ws://77.37.67.224:8080',
+      signalingServerUrl: 'ws://77.37.67.224:80',
     }),
     pull: {},
     push: {},

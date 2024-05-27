@@ -1,12 +1,17 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["./lib/index.ts"],
+  "entryPoints": ["./"],
+  "entryPointStrategy": "expand",
   "exclude": [
     "**/node_modules/**/*",
     "**/*.spec.ts",
     "**/*.stories.ts",
-    "**/*.d.ts"
+    "**/*.d.ts",
+    "**/*index.ts",
+    "./jest.config.ts"
   ],
   "tsconfig": "./tsconfig.docs.json",
-  "out": "../docs"
+  "out": "../docs",
+  "plugin": ["typedoc-theme-hierarchy"],
+  "theme": "hierarchy"
 }

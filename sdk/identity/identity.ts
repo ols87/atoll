@@ -1,5 +1,11 @@
 import { identityTransferDatabase } from './identity.schema';
-import { rand, encrypt, decrypt, hashEncoded, encodeString } from '../utils';
+import {
+  randomLettersNumbers,
+  encrypt,
+  decrypt,
+  hashEncoded,
+  encodeString,
+} from '../utils';
 import { ec as EC } from 'elliptic';
 import * as bip39 from 'bip39';
 import { Buffer } from 'buffer';
@@ -79,7 +85,7 @@ export async function exportIdentityDatabase(encryptionPassword: string) {
     const [password, name, collection, key, id] = Array(5)
       .fill(null)
       .map((value, index) => {
-        return rand(Math.round(12 / (index + 1)));
+        return randomLettersNumbers(Math.round(12 / (index + 1)));
       });
 
     const collections = await identityTransferDatabase({

@@ -20,7 +20,7 @@
         "outputPath": "dist/sdk",
         "tsConfig": "sdk/tsconfig.lib.json",
         "packageJson": "sdk/package.json",
-        "main": "sdk/lib/index.ts",
+        "main": "sdk/index.ts",
         "assets": ["sdk/*.md"]
       }
     },
@@ -36,10 +36,17 @@
         "jestConfig": "sdk/jest.config.ts"
       }
     },
-    "docs": {
+    "docs:build": {
       "executor": "nx:run-commands",
       "options": {
         "commands": ["npm run sdk:docs"]
+      }
+    },
+    "docs:serve": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["sdk:docs:build"],
+      "options": {
+        "commands": ["http-server docs/"]
       }
     }
   }

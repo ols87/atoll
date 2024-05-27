@@ -1,4 +1,4 @@
-import { connectToXmpp, sendMessage } from '@atoll/sdk';
+import { connectToXmpp, registerMessageAccount, sendMessage } from '@atoll/sdk';
 import { customElement, noShadowDOM } from 'solid-element';
 import { createSignal } from 'solid-js';
 
@@ -62,6 +62,26 @@ customElement('atoll-chat', { prop: 'atoll-chat' }, (props) => {
           required
         />
         <button>Authenticate</button>
+        <button
+          type="button"
+          onClick={async () => {
+            const username = (
+              document.querySelector(
+                'input[placeholder="Username"]',
+              ) as HTMLInputElement
+            ).value;
+
+            const password = (
+              document.querySelector(
+                'input[placeholder="Password"]',
+              ) as HTMLInputElement
+            ).value;
+
+            await registerMessageAccount(username, password);
+          }}
+        >
+          Register
+        </button>
       </form>
 
       <form
@@ -97,14 +117,9 @@ customElement('atoll-chat', { prop: 'atoll-chat' }, (props) => {
         ></textarea>
         <button>Send</button>
         <div>
-          <div style={{ display: 'flex', 'flex-direction': 'column-reverse' }}>
+          <div>
             {messages().map((msg) => (
-              <div
-                style={{
-                  'text-align': msg.from ? 'left' : 'right',
-                  'align-self': msg.from ? 'flex-start' : 'flex-end',
-                }}
-              >
+              <div style="margin-bottom:10px">
                 <b>
                   {(msg.from || msg.to).replace('@prosody.vudo.tech/chat', '')}
                 </b>

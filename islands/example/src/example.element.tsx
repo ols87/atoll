@@ -5,7 +5,6 @@ import {
   exportIdentityDatabase,
   upsertProfile,
   initProfileDatabase,
-  connectToXmpp,
 } from '@atoll/sdk';
 import { createSignal } from 'solid-js';
 import { toSvg } from 'jdenticon';

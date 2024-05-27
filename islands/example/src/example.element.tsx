@@ -67,7 +67,6 @@ customElement('atoll-example', { prop: 'atoll-example' }, (props) => {
         value="040759c491906c72ab2277709f857bd735155e609b904805c6a947be6f05899b4c3fe73705fe735dcb1211f4b44d2816446b36db1389af9f7608aeea9dcfa1efaf"
       />
       <button onClick={watch}>Watch Profile</button>
-      <button onClick={connectToXmpp}>Xmpp</button>
 
       <style>
         {`

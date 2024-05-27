@@ -3,20 +3,27 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "sdk:docs": "typedoc --options ./sdk/typedoc.json"
+    "sdk:docs": "typedoc --options ./sdk/typedoc.json",
+    "whitepaper:dev": "npm --prefix ./whitepaper run dev"
   },
   "private": true,
   "dependencies": {
     "@helia/strings": "^3.0.4",
     "@helia/unixfs": "^3.0.6",
     "@nx/devkit": "19.0.2",
+    "@types/crypto-js": "^4.2.2",
     "@types/elliptic": "^6.4.18",
     "@types/qrcode": "^1.5.5",
+    "@types/xmpp__client": "^0.13.3",
+    "@types/xmpp__debug": "^0.13.3",
+    "@xmpp/client": "^0.13.1",
+    "@xmpp/debug": "^0.13.0",
     "axios": "^1.6.0",
     "bip39": "^3.1.0",
     "buffer": "^6.0.3",
     "elliptic": "^6.5.5",
     "events": "^3.3.0",
+    "fast-xml-parser": "^4.4.0",
     "helia": "^4.2.2",
     "jdenticon": "^3.3.0",
     "lit": "^3.1.3",
@@ -30,8 +37,10 @@
     "solid-js": "^1.8.17",
     "tslib": "^2.6.2",
     "typedoc": "^0.25.13",
+    "typedoc-plugin-markdown": "^4.0.2",
     "vite-plugin-solid": "^2.10.2",
-    "vite-tsconfig-paths": "^4.3.2"
+    "vite-tsconfig-paths": "^4.3.2",
+    "ws": "^8.17.0"
   },
   "devDependencies": {
     "@nx/esbuild": "^19.0.2",
@@ -51,7 +60,6 @@
     "@swc/cli": "~0.3.12",
     "@swc/core": "~1.5.5",
     "@swc/helpers": "~0.5.11",
-    "@types/crypto-js": "^4.2.2",
     "@types/jest": "^29.5.12",
     "@types/node": "20.12.11",
     "@typescript-eslint/eslint-plugin": "^7.8.0",

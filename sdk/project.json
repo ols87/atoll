@@ -35,6 +35,12 @@
       "options": {
         "jestConfig": "sdk/jest.config.ts"
       }
+    },
+    "docs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npm run sdk:docs"]
+      }
     }
   }
 }

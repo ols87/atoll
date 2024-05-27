@@ -5,7 +5,7 @@ export * from './identity';
 export * from './media';
 export * from './utils';
 export * from './profile';
-
+export * from './message';
 class Atoll {
   static identity = AtollIdentity;
   static profile = AtollProfile;

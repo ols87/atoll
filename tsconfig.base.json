@@ -15,6 +15,7 @@
     "baseUrl": ".",
     "paths": {
       "@atoll/sdk": ["sdk/lib/index.ts"],
+      "@atoll/xmpp-server": ["xmpp-server/src/index.ts"],
       "@ui/*": ["./ui/*"],
       "cli": ["./cli/src/index.ts"]
     }

@@ -13,10 +13,55 @@ export default defineConfig({
         {
           label: 'About',
           items: [
-            // Each item here is one entry in the navigation menu.
             {
               label: 'What is Atoll?',
               link: '/about/what-is-atoll',
+            },
+            {
+              label: 'Philosophy',
+              link: '/about/philosophy',
+            },
+            {
+              label: 'Roadmap',
+              link: '/about/roadmap',
+            },
+          ],
+        },
+        {
+          label: 'For Users',
+          items: [
+            {
+              label: 'Getting Started',
+              link: '/docs/user/getting-started',
+            },
+            {
+              label: 'Accounts',
+              link: '/docs/user/accounts',
+            },
+            {
+              label: 'Posts',
+              link: '/docs/user/posts',
+            },
+          ],
+        },
+        {
+          label: 'For Developers',
+          items: [
+            {
+              label: 'Installation',
+              link: '/docs/developer/installation',
+            },
+            {
+              label: 'Configuration',
+              link: '/docs/developer/configuration',
+            },
+            {
+              label: 'SDK',
+              link: '/docs/developer/sdk',
+            },
+            {
+              label: 'Messaging Server',
+              link: '/docs/developer/messaging-server',
             },
           ],
         },

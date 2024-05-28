@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "sdk:docs": "typedoc --options ./sdk/typedoc.json",
-    "whitepaper:dev": "npm --prefix ./whitepaper run dev"
+    "whitepaper:dev": "npm --prefix ./whitepaper run dev",
+    "whitepaper:build": "npm --prefix ./whitepaper run build"
   },
   "private": true,
   "dependencies": {

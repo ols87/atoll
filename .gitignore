@@ -9,7 +9,7 @@ tmp
 node_modules
 
 ui/islands
-./docs
+docs
 
 # IDEs and editors
 /.idea

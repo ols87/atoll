@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "sdk:docs": "typedoc --options ./sdk/typedoc.json",
+    "sdk:docs": "typedoc --options ./sdk/typedoc.json"
   },
   "private": true,
   "dependencies": {

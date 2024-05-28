@@ -39,7 +39,7 @@
     "docs:build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm run sdk:docs"]
+        "commands": ["typedoc --options ./sdk/typedoc.json"]
       }
     },
     "docs:serve": {

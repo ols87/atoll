@@ -16,13 +16,13 @@
     "build": {
      "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm run whitepaper:build"]
+        "commands": ["npm --prefix ./whitepaper run build"]
       }
     },
     "dev": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm run whitepaper:dev"]
+        "commands": ["npm --prefix ./whitepaper run dev"]
       }
     }
   }

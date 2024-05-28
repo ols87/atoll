@@ -16,14 +16,14 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["astro build"],
+        "commands": ["npx astro build"],
         "root": "whitepaper"
       }
     },
     "dev": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["astro dev"],
+        "commands": ["npx astro dev"],
         "root": "whitepaper"
       }
     }

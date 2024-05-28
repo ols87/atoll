@@ -14,9 +14,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@atoll/sdk": ["sdk/lib/index.ts"],
-      "@atoll/xmpp-server": ["xmpp-server/src/index.ts"],
-      "@ui/*": ["./ui/*"],
+      "@atoll/sdk": ["./sdk/index.ts"],
       "cli": ["./cli/src/index.ts"]
     }
   },

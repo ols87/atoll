@@ -1,7 +1,7 @@
 {
   "name": "sdk",
   "$schema": "../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "sdk/src",
+  "sourceRoot": "sdk",
   "projectType": "library",
   "release": {
     "version": {
@@ -17,7 +17,7 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/sdk",
+        "outputPath": "sdk/dist",
         "tsConfig": "sdk/tsconfig.lib.json",
         "packageJson": "sdk/package.json",
         "main": "sdk/index.ts",

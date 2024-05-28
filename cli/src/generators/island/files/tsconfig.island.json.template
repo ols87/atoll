@@ -6,5 +6,5 @@
     "composite": true
   },
   "exclude": ["src/**/*.spec.*", "src/**/*.test.*, src/**/*.stories.*"],
-  "include": ["src/**/*.tsx"]
+  "include": ["src/**/*.tsx", "../../sdk"]
 }

@@ -14,15 +14,17 @@
   "tags": [],
   "targets": {
     "build": {
-     "executor": "nx:run-commands",
+      "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm --prefix ./whitepaper run build"]
+        "commands": ["astro build"],
+        "root": "whitepaper"
       }
     },
     "dev": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm --prefix ./whitepaper run dev"]
+        "commands": ["astro dev"],
+        "root": "whitepaper"
       }
     }
   }

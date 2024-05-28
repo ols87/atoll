@@ -1,0 +1,1 @@
+nx run whitepaper:build && nx run sdk:docs:build && nx ui:build

@@ -125,7 +125,7 @@ export class AtollProfile {
    * @param {...Parameters<typeof initProfileDatabase>} args - Arguments passed to initProfileDatabase.
    * @returns {Promise<RxCollection>} A promise that resolves to the collection object for profiles.
    */
-  static initDatabase(...args: Parameters<typeof initProfileDatabase>) {
+  static initDatabase(...args: Parameters<typeof initProfileDatabase>): Promise<RxCollection> {
     return initProfileDatabase(...args);
   }
 

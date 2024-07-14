@@ -1,19 +1,15 @@
 import { RxJsonSchema } from 'rxdb';
 import { SignedProp, signedPropType } from '../utils';
 
-export type ProfileSchemaBase = {
-  id: string;
-  icon: SignedProp;
-  qr: SignedProp;
-};
-
 export type ProfileWriteSchema = {
   avatar?: SignedProp;
   bio?: SignedProp;
-  name?: SignedProp;
+  alias?: SignedProp;
 };
 
-export type ProfileSchema = ProfileSchemaBase & ProfileWriteSchema;
+export type ProfileSchema = ProfileWriteSchema & {
+  id: string;
+};
 
 export const profileSchema: RxJsonSchema<ProfileSchema> = {
   version: 0,
@@ -26,9 +22,7 @@ export const profileSchema: RxJsonSchema<ProfileSchema> = {
     },
     avatar: signedPropType,
     bio: signedPropType,
-    name: signedPropType,
-    icon: signedPropType,
-    qr: signedPropType,
+    alias: signedPropType,
   },
   required: ['id'],
 };

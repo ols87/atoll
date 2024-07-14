@@ -14,10 +14,6 @@ export default defineConfig({
           label: 'About',
           items: [
             {
-              label: 'What is Atoll?',
-              link: '/about/what-is-atoll',
-            },
-            {
               label: 'Philosophy',
               link: '/about/philosophy',
             },
@@ -25,22 +21,34 @@ export default defineConfig({
               label: 'Roadmap',
               link: '/about/roadmap',
             },
+            {
+              label: 'Contribute',
+              link: '/about/contribute',
+            },
           ],
         },
         {
           label: 'For Users',
           items: [
             {
-              label: 'Getting Started',
-              link: '/docs/user/getting-started',
+              label: 'Identities',
+              link: '/docs/user/identities',
             },
             {
-              label: 'Accounts',
-              link: '/docs/user/accounts',
+              label: 'Profiles',
+              link: '/docs/user/profile',
             },
             {
               label: 'Posts',
               link: '/docs/user/posts',
+            },
+            {
+              label: 'Messaging',
+              link: '/docs/user/messaging',
+            },
+            {
+              label: 'Monetization',
+              link: '/docs/user/nfts',
             },
           ],
         },
@@ -48,19 +56,15 @@ export default defineConfig({
           label: 'For Developers',
           items: [
             {
-              label: 'Installation',
-              link: '/docs/developer/installation',
-            },
-            {
-              label: 'Configuration',
-              link: '/docs/developer/configuration',
-            },
-            {
-              label: 'SDK',
+              label: 'Typescript SDK',
               link: '/docs/developer/sdk',
             },
             {
-              label: 'Messaging Server',
+              label: 'Replication Server',
+              link: '/docs/developer/messaging-server',
+            },
+            {
+              label: 'XMPP Server',
               link: '/docs/developer/messaging-server',
             },
           ],

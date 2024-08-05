@@ -1,11 +1,23 @@
-# sdk
+# Atoll SDK
 
-This library was generated with [Nx](https://nx.dev).
+## Commands
 
-## Building
+### Build
+```
+nx run sdk:test
+```
 
-Run `nx build sdk` to build the library.
+### Test
+```
+nx run sdk:test
+```
 
-## Running unit tests
+### Serve Docs
+```
+nx run sdk:docs:serve
+```
 
-Run `nx test sdk` to execute the unit tests via [Jest](https://jestjs.io).
+### Build Docs
+```
+nx run sdk:docs:build
+```

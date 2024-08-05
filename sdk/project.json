@@ -46,7 +46,7 @@
       "executor": "nx:run-commands",
       "dependsOn": ["sdk:docs:build"],
       "options": {
-        "commands": ["http-server docs/"]
+        "commands": ["http-server sdk/docs/"]
       }
     }
   }

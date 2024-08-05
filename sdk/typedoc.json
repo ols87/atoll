@@ -11,7 +11,7 @@
     "./jest.config.ts"
   ],
   "tsconfig": "./tsconfig.docs.json",
-  "out": "../docs",
+  "out": "./docs",
   "plugin": ["typedoc-theme-hierarchy"],
   "theme": "hierarchy"
 }

@@ -11,19 +11,19 @@ export default defineConfig({
       },
       sidebar: [
         {
-          label: 'About',
+          label: 'Overview',
           items: [
             {
-              label: 'Philosophy',
-              link: '/about/philosophy',
+              label: 'What is Atoll?',
+              link: '/overview/what-is-atoll',
             },
             {
               label: 'Roadmap',
-              link: '/about/roadmap',
+              link: '/overview/roadmap',
             },
             {
               label: 'Contribute',
-              link: '/about/contribute',
+              link: '/overview/contribute',
             },
           ],
         },
@@ -35,12 +35,8 @@ export default defineConfig({
               link: '/docs/user/identities',
             },
             {
-              label: 'Profiles',
-              link: '/docs/user/profile',
-            },
-            {
-              label: 'Posts',
-              link: '/docs/user/posts',
+              label: 'Publishing',
+              link: '/docs/user/publishing',
             },
             {
               label: 'Messaging',
